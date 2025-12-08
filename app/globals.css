@@ -1,28 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Oswald:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 248, 250, 252;
-  --background-end-rgb: 241, 245, 249;
+  --rr-navy: #040c30;
+  --rr-navy-light: #121c52;
+  --rr-blue: #0a97cd;
+  --rr-pink: #f84265;
+  --rr-gray: #636a86;
+  --rr-gray-light: #9ca4c7;
+  --rr-cream: #f9f9fb;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: var(--rr-navy);
+  background: var(--rr-cream);
   min-height: 100vh;
+  font-family: 'Lato', sans-serif;
 }
 
 /* Quill Editor Styles */
 .ql-container {
   font-size: 16px;
   min-height: 300px;
+  background: white;
 }
 
 .ql-editor {
@@ -32,10 +35,12 @@ body {
 .ql-toolbar {
   background: white;
   border-radius: 0.5rem 0.5rem 0 0;
+  border-color: #e5e7eb !important;
 }
 
 .ql-container {
   border-radius: 0 0 0.5rem 0.5rem;
+  border-color: #e5e7eb !important;
 }
 
 /* Custom scrollbar */
@@ -44,15 +49,42 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--rr-cream);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--rr-gray-light);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: var(--rr-gray);
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply bg-rr-blue hover:bg-rr-navy text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200;
+}
+
+.btn-secondary {
+  @apply bg-white hover:bg-gray-50 text-rr-navy border border-gray-200 font-medium py-2 px-4 rounded-lg transition-all duration-200;
+}
+
+.btn-danger {
+  @apply bg-rr-pink hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200;
+}
+
+/* Form input styles */
+.form-input {
+  @apply w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200;
+}
+
+.form-label {
+  @apply block text-sm font-semibold text-rr-navy mb-2;
 }

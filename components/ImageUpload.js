@@ -71,8 +71,8 @@ export default function ImageUpload({ label, value, onChange, helpText }) {
   };
 
   return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="space-y-3">
+      <label className="block text-sm font-semibold text-rr-navy">
         {label}
       </label>
 
@@ -82,13 +82,13 @@ export default function ImageUpload({ label, value, onChange, helpText }) {
           <img
             src={imageUrl}
             alt="Preview"
-            className="max-w-xs max-h-48 rounded-lg border border-gray-200 object-cover"
+            className="max-w-xs max-h-48 rounded-xl border border-gray-100 object-cover shadow-sm"
             onError={() => setError('Failed to load image preview')}
           />
           <button
             type="button"
             onClick={handleRemove}
-            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+            className="absolute -top-2 -right-2 bg-rr-pink text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold hover:bg-red-600 shadow-md transition-all duration-200"
           >
             ×
           </button>
@@ -108,25 +108,25 @@ export default function ImageUpload({ label, value, onChange, helpText }) {
         />
         <label
           htmlFor={`file-${label.replace(/\s+/g, '-').toLowerCase()}`}
-          className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer transition-colors ${
+          className={`px-4 py-2.5 bg-rr-blue hover:bg-rr-navy text-white font-medium rounded-lg cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md ${
             uploading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
           {uploading ? 'Uploading...' : imageUrl ? 'Change Image' : 'Upload Image'}
         </label>
         {imageUrl && (
-          <span className="text-xs text-green-600">Uploaded to Webflow</span>
+          <span className="text-xs font-medium text-emerald-600">Uploaded to Webflow</span>
         )}
       </div>
 
       {/* Help text */}
       {helpText && (
-        <p className="text-xs text-gray-500">{helpText}</p>
+        <p className="text-xs text-rr-gray">{helpText}</p>
       )}
 
       {/* Error message */}
       {error && (
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm text-rr-pink font-medium">{error}</p>
       )}
     </div>
   );

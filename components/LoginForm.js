@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+const LOGO_URL = 'https://cdn.prod.website-files.com/64c2c941368dd7094ffd75a5/663e36a7db766a236592729b_Resting%20Rainbow%20Pet%20Memorials%20and%20Cremation%20TL%20FF-01.webp';
+
 export default function LoginForm({ onSuccess }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -34,16 +36,24 @@ export default function LoginForm({ onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          Tampa Blog Manager
-        </h1>
+    <div className="min-h-screen flex items-center justify-center bg-rr-cream">
+      <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full border border-gray-100">
+        <div className="flex flex-col items-center mb-8">
+          <img
+            src={LOGO_URL}
+            alt="Resting Rainbow"
+            className="h-16 w-auto mb-4"
+          />
+          <h1 className="text-xl font-heading font-bold text-rr-navy">
+            Blog Manager
+          </h1>
+          <p className="text-rr-gray text-sm mt-1">Sign in to manage your posts</p>
+        </div>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+          <div className="mb-6">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-semibold text-rr-navy mb-2"
             >
               Password
             </label>
@@ -52,20 +62,20 @@ export default function LoginForm({ onSuccess }) {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
               placeholder="Enter password"
               required
             />
           </div>
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            <div className="mb-4 p-3 bg-red-50 border border-rr-pink/30 text-rr-pink rounded-lg text-sm">
               {error}
             </div>
           )}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full bg-rr-blue text-white py-3 px-4 rounded-lg hover:bg-rr-navy disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>

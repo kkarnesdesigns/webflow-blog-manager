@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import LoginForm from '@/components/LoginForm';
 import PostsList from '@/components/PostsList';
+
+const LOGO_URL = 'https://cdn.prod.website-files.com/64c2c941368dd7094ffd75a5/663e36a7db766a236592729b_Resting%20Rainbow%20Pet%20Memorials%20and%20Cremation%20TL%20FF-01.webp';
 
 export default function Home() {
   const [authenticated, setAuthenticated] = useState(null);
@@ -29,8 +32,8 @@ export default function Home() {
 
   if (authenticated === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-rr-cream">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rr-blue"></div>
       </div>
     );
   }
@@ -40,23 +43,30 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-rr-cream">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-rr-navy shadow-lg">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-800">
-            Tampa Blog Manager
-          </h1>
+          <div className="flex items-center gap-4">
+            <img
+              src={LOGO_URL}
+              alt="Resting Rainbow"
+              className="h-12 w-auto"
+            />
+            <span className="text-white/60 text-sm font-medium hidden sm:block">
+              Blog Manager
+            </span>
+          </div>
           <div className="flex items-center gap-4">
             <Link
               href="/posts/new"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="px-5 py-2.5 bg-rr-blue hover:bg-rr-pink text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
             >
               + New Post
             </Link>
             <button
               onClick={handleLogout}
-              className="text-gray-600 hover:text-gray-800 transition-colors"
+              className="text-white/70 hover:text-white transition-colors font-medium"
             >
               Logout
             </button>
@@ -66,17 +76,22 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+        <div className="mb-8">
+          <h2 className="text-3xl font-heading font-bold text-rr-navy mb-2">
             Blog Posts
           </h2>
-          <p className="text-gray-600">
-            Manage your Tampa blog posts. Create, edit, and publish content.
+          <p className="text-rr-gray">
+            Manage your Resting Rainbow of Tampa blog posts. Create, edit, and publish content.
           </p>
         </div>
 
         <PostsList />
       </main>
+
+      {/* Footer */}
+      <footer className="mt-auto py-6 text-center text-rr-gray text-sm">
+        <p>Resting Rainbow of Tampa</p>
+      </footer>
     </div>
   );
 }

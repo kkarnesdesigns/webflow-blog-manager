@@ -258,7 +258,7 @@ export default function PostEditor({ postId = null }) {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rr-blue"></div>
       </div>
     );
   }
@@ -266,7 +266,7 @@ export default function PostEditor({ postId = null }) {
   return (
     <div className="space-y-6">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
+        <div className="bg-red-50 border border-rr-pink/30 text-rr-pink p-4 rounded-xl">
           {error}
         </div>
       )}
@@ -274,27 +274,27 @@ export default function PostEditor({ postId = null }) {
       {/* Title and Slug */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-rr-navy mb-2">
             Post Title *
           </label>
           <input
             type="text"
             value={formData.name}
             onChange={handleNameChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
             placeholder="Enter post title"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-rr-navy mb-2">
             URL Slug *
           </label>
           <input
             type="text"
             value={formData.slug}
             onChange={(e) => handleChange('slug', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
             placeholder="url-friendly-slug"
             required
           />
@@ -303,13 +303,13 @@ export default function PostEditor({ postId = null }) {
 
       {/* Summary */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-semibold text-rr-navy mb-2">
           Post Summary
         </label>
         <textarea
           value={formData['post-summary']}
           onChange={(e) => handleChange('post-summary', e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
           rows={3}
           placeholder="Brief summary that appears on the blog grid..."
         />
@@ -317,7 +317,7 @@ export default function PostEditor({ postId = null }) {
 
       {/* Rich Text Editor */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-semibold text-rr-navy mb-2">
           Post Body
         </label>
         <RichTextEditor
@@ -329,26 +329,26 @@ export default function PostEditor({ postId = null }) {
       {/* Author and Alt Text */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-rr-navy mb-2">
             Author Name
           </label>
           <input
             type="text"
             value={formData['author-name']}
             onChange={(e) => handleChange('author-name', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
             placeholder="Author name"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-rr-navy mb-2">
             Image Alt Text
           </label>
           <input
             type="text"
             value={formData['alt-text']}
             onChange={(e) => handleChange('alt-text', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
             placeholder="Description for main image"
           />
         </div>
@@ -357,13 +357,13 @@ export default function PostEditor({ postId = null }) {
       {/* Location and Category */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-rr-navy mb-2">
             Location
           </label>
           <select
             value={formData.location}
             onChange={(e) => handleChange('location', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
           >
             <option value="">Select location...</option>
             {locations.map((loc) => (
@@ -374,13 +374,13 @@ export default function PostEditor({ postId = null }) {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-rr-navy mb-2">
             Category
           </label>
           <select
             value={formData.category}
             onChange={(e) => handleChange('category', e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
           >
             <option value="">Select category...</option>
             {categories.map((cat) => (
@@ -399,16 +399,16 @@ export default function PostEditor({ postId = null }) {
           id="featured"
           checked={formData.featured}
           onChange={(e) => handleChange('featured', e.target.checked)}
-          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          className="w-5 h-5 text-rr-blue border-gray-300 rounded focus:ring-rr-blue"
         />
-        <label htmlFor="featured" className="text-sm font-medium text-gray-700">
+        <label htmlFor="featured" className="text-sm font-semibold text-rr-navy">
           Featured Post
         </label>
       </div>
 
       {/* Image Uploads */}
-      <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-        <h3 className="text-sm font-medium text-gray-700">Images</h3>
+      <div className="space-y-4 p-5 bg-white rounded-xl border border-gray-100">
+        <h3 className="text-sm font-semibold text-rr-navy">Images</h3>
 
         <ImageUpload
           label="Main Image"
@@ -433,17 +433,17 @@ export default function PostEditor({ postId = null }) {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-3 pt-4 border-t">
+      <div className="flex items-center gap-3 pt-6 border-t border-gray-100">
         <button
           onClick={() => router.push('/')}
-          className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+          className="px-5 py-2.5 text-rr-gray hover:text-rr-navy font-medium transition-colors"
         >
           Cancel
         </button>
         <button
           onClick={() => handleSave(true)}
           disabled={saving || !formData.name || !formData.slug}
-          className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg disabled:opacity-50 transition-colors"
+          className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-rr-navy font-semibold rounded-lg disabled:opacity-50 transition-all duration-200"
         >
           {saving ? 'Saving...' : 'Save as Draft'}
         </button>
@@ -451,7 +451,7 @@ export default function PostEditor({ postId = null }) {
           <button
             onClick={handlePublish}
             disabled={publishing || saving || !formData.name || !formData.slug}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50 transition-colors"
+            className="px-5 py-2.5 bg-rr-blue hover:bg-rr-navy text-white font-semibold rounded-lg disabled:opacity-50 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             {publishing ? 'Publishing...' : isDraft ? 'Save & Publish' : 'Update Live Post'}
           </button>
