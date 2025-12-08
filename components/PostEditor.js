@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import RichTextEditor from './RichTextEditor';
-import ImageUpload from './ImageUpload';
 
 export default function PostEditor({ postId = null }) {
   const router = useRouter();
@@ -120,22 +119,12 @@ export default function PostEditor({ postId = null }) {
       if (!payload.location) delete payload.location;
       if (!payload.category) delete payload.category;
 
-      // Format image fields for Webflow API
-      if (payload['main-image-2']) {
-        payload['main-image-2'] = { url: payload['main-image-2'] };
-      } else {
-        delete payload['main-image-2'];
-      }
-      if (payload['thumbnail-image']) {
-        payload['thumbnail-image'] = { url: payload['thumbnail-image'] };
-      } else {
-        delete payload['thumbnail-image'];
-      }
-      if (payload['author-image']) {
-        payload['author-image'] = { url: payload['author-image'] };
-      } else {
-        delete payload['author-image'];
-      }
+      // Remove image fields - Webflow requires images to be uploaded to their CDN
+      // External URLs (like ImgBB) are not accepted
+      // Images must be managed in Webflow directly until we have asset upload API access
+      delete payload['main-image-2'];
+      delete payload['thumbnail-image'];
+      delete payload['author-image'];
 
       const url = isNew ? '/api/posts' : `/api/posts/${postId}`;
       const method = isNew ? 'POST' : 'PATCH';
@@ -350,30 +339,53 @@ export default function PostEditor({ postId = null }) {
         </label>
       </div>
 
-      {/* Image Uploads */}
+      {/* Images (Read-only preview) */}
       <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-        <h3 className="text-sm font-medium text-gray-700">Images</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-700">Images</h3>
+          <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
+            Edit images in Webflow
+          </span>
+        </div>
+        <p className="text-xs text-gray-500">
+          Image uploads require Webflow asset API access. Please use the Webflow CMS to manage images.
+        </p>
 
-        <ImageUpload
-          label="Main Image"
-          value={formData['main-image-2']}
-          onChange={(url) => handleChange('main-image-2', url)}
-          helpText="The main featured image for the blog post"
-        />
-
-        <ImageUpload
-          label="Thumbnail Image"
-          value={formData['thumbnail-image']}
-          onChange={(url) => handleChange('thumbnail-image', url)}
-          helpText="Smaller version shown on the blog grid"
-        />
-
-        <ImageUpload
-          label="Author Image"
-          value={formData['author-image']}
-          onChange={(url) => handleChange('author-image', url)}
-          helpText="Photo of the post author"
-        />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {formData['main-image-2'] && (
+            <div>
+              <p className="text-xs text-gray-500 mb-1">Main Image</p>
+              <img
+                src={formData['main-image-2']}
+                alt="Main"
+                className="w-full h-32 object-cover rounded-lg border"
+              />
+            </div>
+          )}
+          {formData['thumbnail-image'] && (
+            <div>
+              <p className="text-xs text-gray-500 mb-1">Thumbnail</p>
+              <img
+                src={formData['thumbnail-image']}
+                alt="Thumbnail"
+                className="w-full h-32 object-cover rounded-lg border"
+              />
+            </div>
+          )}
+          {formData['author-image'] && (
+            <div>
+              <p className="text-xs text-gray-500 mb-1">Author</p>
+              <img
+                src={formData['author-image']}
+                alt="Author"
+                className="w-full h-32 object-cover rounded-lg border"
+              />
+            </div>
+          )}
+          {!formData['main-image-2'] && !formData['thumbnail-image'] && !formData['author-image'] && (
+            <p className="text-sm text-gray-400 col-span-3">No images set</p>
+          )}
+        </div>
       </div>
 
       {/* Action Buttons */}
