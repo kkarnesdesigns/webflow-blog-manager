@@ -21,7 +21,7 @@ export default function RichTextEditor({ value, onChange }) {
         ['bold', 'italic', 'underline', 'strike'],
         [{ list: 'ordered' }, { list: 'bullet' }],
         ['blockquote', 'code-block'],
-        ['link', 'image'],
+        ['link'],
         [{ align: [] }],
         ['clean'],
       ],
@@ -40,7 +40,6 @@ export default function RichTextEditor({ value, onChange }) {
     'blockquote',
     'code-block',
     'link',
-    'image',
     'align',
   ];
 

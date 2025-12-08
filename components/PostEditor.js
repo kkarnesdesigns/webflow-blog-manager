@@ -133,12 +133,27 @@ export default function PostEditor({ postId = null }) {
     }));
   };
 
+  // Strip base64 images and problematic content from rich text
+  const sanitizeRichText = (html) => {
+    if (!html) return html;
+    // Remove base64 images (data:image/...)
+    let sanitized = html.replace(/<img[^>]+src=["']data:image\/[^"']+["'][^>]*>/gi, '');
+    // Remove images with blob URLs
+    sanitized = sanitized.replace(/<img[^>]+src=["']blob:[^"']+["'][^>]*>/gi, '');
+    return sanitized;
+  };
+
   const handleSave = async (asDraft = true) => {
     setError('');
     setSaving(true);
 
     try {
       const payload = { ...formData };
+
+      // Sanitize rich text to remove problematic images
+      if (payload['rich-text']) {
+        payload['rich-text'] = sanitizeRichText(payload['rich-text']);
+      }
 
       // Remove empty reference fields
       if (!payload.location) delete payload.location;

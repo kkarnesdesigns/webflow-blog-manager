@@ -40,7 +40,10 @@ export async function POST(request) {
   try {
     const webflow = getWebflowClient();
     const body = await request.json();
-    const { isDraft = true, ...fieldData } = body;
+    const { isDraft = true, isLive, ...fieldData } = body;
+
+    // Log what we're sending
+    console.log('Creating post with fieldData:', JSON.stringify(fieldData, null, 2));
 
     const result = await webflow.createCollectionItem(
       BLOG_COLLECTION_ID,
@@ -51,6 +54,7 @@ export async function POST(request) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error creating post:', error);
+    console.error('Full error details:', JSON.stringify(error, null, 2));
     return NextResponse.json(
       { error: error.message || 'Failed to create post' },
       { status: 500 }
