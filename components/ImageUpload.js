@@ -19,9 +19,9 @@ export default function ImageUpload({ label, value, onChange, helpText }) {
       return;
     }
 
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      setError('Image must be smaller than 10MB.');
+    // Validate file size (max 4MB for Vercel)
+    if (file.size > 4 * 1024 * 1024) {
+      setError('Image must be smaller than 4MB.');
       return;
     }
 
@@ -41,7 +41,13 @@ export default function ImageUpload({ label, value, onChange, helpText }) {
         body: formData,
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(text || 'Upload failed - invalid response');
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Upload failed');

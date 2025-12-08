@@ -27,11 +27,11 @@ export async function POST(request) {
       );
     }
 
-    // Validate file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024;
+    // Validate file size (max 4MB for Vercel serverless)
+    const maxSize = 4 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'File too large. Maximum size is 10MB.' },
+        { error: 'File too large. Maximum size is 4MB.' },
         { status: 400 }
       );
     }
@@ -48,18 +48,23 @@ export async function POST(request) {
       // Use ImgBB if API key is configured
       const base64Image = buffer.toString('base64');
 
-      const imgbbFormData = new FormData();
-      imgbbFormData.append('image', base64Image);
-      imgbbFormData.append('key', imgbbApiKey);
+      // ImgBB requires URL-encoded form data, not multipart
+      const imgbbParams = new URLSearchParams();
+      imgbbParams.append('image', base64Image);
+      imgbbParams.append('key', imgbbApiKey);
 
       const imgbbResponse = await fetch('https://api.imgbb.com/1/upload', {
         method: 'POST',
-        body: imgbbFormData,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: imgbbParams.toString(),
       });
 
       const imgbbData = await imgbbResponse.json();
 
       if (!imgbbResponse.ok || !imgbbData.success) {
+        console.error('ImgBB error:', imgbbData);
         throw new Error(imgbbData.error?.message || 'Failed to upload to ImgBB');
       }
 
