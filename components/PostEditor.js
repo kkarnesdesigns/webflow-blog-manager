@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import RichTextEditor from './RichTextEditor';
+import ImageUpload from './ImageUpload';
 
 export default function PostEditor({ postId = null }) {
   const router = useRouter();
@@ -18,9 +19,13 @@ export default function PostEditor({ postId = null }) {
     featured: false,
     location: '',
     category: '',
-    'main-image-2': '',
-    'thumbnail-image': '',
-    'author-image': '',
+  });
+
+  // Store image data separately (fileId and url)
+  const [images, setImages] = useState({
+    'main-image-2': { fileId: '', url: '' },
+    'thumbnail-image': { fileId: '', url: '' },
+    'author-image': { fileId: '', url: '' },
   });
 
   const [locations, setLocations] = useState([]);
@@ -75,9 +80,22 @@ export default function PostEditor({ postId = null }) {
         featured: data.fieldData?.featured || false,
         location: data.fieldData?.location || '',
         category: data.fieldData?.category || '',
-        'main-image-2': data.fieldData?.['main-image-2']?.url || '',
-        'thumbnail-image': data.fieldData?.['thumbnail-image']?.url || '',
-        'author-image': data.fieldData?.['author-image']?.url || '',
+      });
+
+      // Load existing images
+      setImages({
+        'main-image-2': {
+          fileId: data.fieldData?.['main-image-2']?.fileId || '',
+          url: data.fieldData?.['main-image-2']?.url || '',
+        },
+        'thumbnail-image': {
+          fileId: data.fieldData?.['thumbnail-image']?.fileId || '',
+          url: data.fieldData?.['thumbnail-image']?.url || '',
+        },
+        'author-image': {
+          fileId: data.fieldData?.['author-image']?.fileId || '',
+          url: data.fieldData?.['author-image']?.url || '',
+        },
       });
     } catch (err) {
       setError(err.message);
@@ -108,6 +126,13 @@ export default function PostEditor({ postId = null }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleImageChange = (field, imageData) => {
+    setImages((prev) => ({
+      ...prev,
+      [field]: imageData,
+    }));
+  };
+
   const handleSave = async (asDraft = true) => {
     setError('');
     setSaving(true);
@@ -119,12 +144,25 @@ export default function PostEditor({ postId = null }) {
       if (!payload.location) delete payload.location;
       if (!payload.category) delete payload.category;
 
-      // Remove image fields - Webflow requires images to be uploaded to their CDN
-      // External URLs (like ImgBB) are not accepted
-      // Images must be managed in Webflow directly until we have asset upload API access
-      delete payload['main-image-2'];
-      delete payload['thumbnail-image'];
-      delete payload['author-image'];
+      // Add image fields if they have fileIds
+      if (images['main-image-2'].fileId) {
+        payload['main-image-2'] = {
+          fileId: images['main-image-2'].fileId,
+          url: images['main-image-2'].url,
+        };
+      }
+      if (images['thumbnail-image'].fileId) {
+        payload['thumbnail-image'] = {
+          fileId: images['thumbnail-image'].fileId,
+          url: images['thumbnail-image'].url,
+        };
+      }
+      if (images['author-image'].fileId) {
+        payload['author-image'] = {
+          fileId: images['author-image'].fileId,
+          url: images['author-image'].url,
+        };
+      }
 
       const url = isNew ? '/api/posts' : `/api/posts/${postId}`;
       const method = isNew ? 'POST' : 'PATCH';
@@ -339,53 +377,30 @@ export default function PostEditor({ postId = null }) {
         </label>
       </div>
 
-      {/* Images (Read-only preview) */}
+      {/* Image Uploads */}
       <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-gray-700">Images</h3>
-          <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
-            Edit images in Webflow
-          </span>
-        </div>
-        <p className="text-xs text-gray-500">
-          Image uploads require Webflow asset API access. Please use the Webflow CMS to manage images.
-        </p>
+        <h3 className="text-sm font-medium text-gray-700">Images</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {formData['main-image-2'] && (
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Main Image</p>
-              <img
-                src={formData['main-image-2']}
-                alt="Main"
-                className="w-full h-32 object-cover rounded-lg border"
-              />
-            </div>
-          )}
-          {formData['thumbnail-image'] && (
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Thumbnail</p>
-              <img
-                src={formData['thumbnail-image']}
-                alt="Thumbnail"
-                className="w-full h-32 object-cover rounded-lg border"
-              />
-            </div>
-          )}
-          {formData['author-image'] && (
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Author</p>
-              <img
-                src={formData['author-image']}
-                alt="Author"
-                className="w-full h-32 object-cover rounded-lg border"
-              />
-            </div>
-          )}
-          {!formData['main-image-2'] && !formData['thumbnail-image'] && !formData['author-image'] && (
-            <p className="text-sm text-gray-400 col-span-3">No images set</p>
-          )}
-        </div>
+        <ImageUpload
+          label="Main Image"
+          value={images['main-image-2']}
+          onChange={(data) => handleImageChange('main-image-2', data)}
+          helpText="The main featured image for the blog post"
+        />
+
+        <ImageUpload
+          label="Thumbnail Image"
+          value={images['thumbnail-image']}
+          onChange={(data) => handleImageChange('thumbnail-image', data)}
+          helpText="Smaller version shown on the blog grid"
+        />
+
+        <ImageUpload
+          label="Author Image"
+          value={images['author-image']}
+          onChange={(data) => handleImageChange('author-image', data)}
+          helpText="Photo of the post author"
+        />
       </div>
 
       {/* Action Buttons */}

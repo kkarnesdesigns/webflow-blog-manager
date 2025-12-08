@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
+import { getWebflowClient } from '@/lib/webflow';
+import crypto from 'crypto';
 
-// Upload image and return a publicly accessible URL
-// We'll use a simple approach: upload to a free image hosting service
-// or you can configure your own S3/Cloudinary
+const SITE_ID = '64c2c941368dd7094ffd75a5';
 
 export async function POST(request) {
   if (!await isAuthenticated()) {
@@ -40,81 +40,54 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Upload to ImgBB (free image hosting with API)
-    // You can replace this with Cloudinary, S3, or any other service
-    const imgbbApiKey = process.env.IMGBB_API_KEY;
+    // Generate MD5 hash
+    const fileHash = crypto.createHash('md5').update(buffer).digest('hex');
 
-    if (imgbbApiKey) {
-      // Use ImgBB if API key is configured
-      const base64Image = buffer.toString('base64');
+    // Generate unique filename
+    const ext = file.name.split('.').pop() || 'jpg';
+    const fileName = `blog-${Date.now()}.${ext}`;
 
-      // ImgBB requires URL-encoded form data, not multipart
-      const imgbbParams = new URLSearchParams();
-      imgbbParams.append('image', base64Image);
-      imgbbParams.append('key', imgbbApiKey);
+    const webflow = getWebflowClient();
 
-      const imgbbResponse = await fetch('https://api.imgbb.com/1/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: imgbbParams.toString(),
-      });
+    // Step 1: Create asset metadata in Webflow
+    console.log('Creating asset metadata...');
+    const metadata = await webflow.createAssetMetadata(SITE_ID, fileName, fileHash);
+    console.log('Metadata response:', JSON.stringify(metadata, null, 2));
 
-      const imgbbData = await imgbbResponse.json();
+    // Step 2: Upload to S3 using the provided details
+    console.log('Uploading to S3...');
+    const s3FormData = new FormData();
 
-      if (!imgbbResponse.ok || !imgbbData.success) {
-        console.error('ImgBB error:', imgbbData);
-        throw new Error(imgbbData.error?.message || 'Failed to upload to ImgBB');
-      }
-
-      return NextResponse.json({
-        url: imgbbData.data.url,
-        displayUrl: imgbbData.data.display_url,
-        deleteUrl: imgbbData.data.delete_url,
+    // Add all upload details (order matters for S3)
+    if (metadata.uploadDetails) {
+      Object.entries(metadata.uploadDetails).forEach(([key, value]) => {
+        s3FormData.append(key, value);
       });
     }
 
-    // Fallback: Use Cloudinary unsigned upload if configured
-    const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const cloudinaryUploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
+    // Add the file last with correct content type
+    s3FormData.append('file', new Blob([buffer], { type: file.type }), fileName);
 
-    if (cloudinaryCloudName && cloudinaryUploadPreset) {
-      const cloudinaryFormData = new FormData();
-      cloudinaryFormData.append('file', new Blob([buffer], { type: file.type }));
-      cloudinaryFormData.append('upload_preset', cloudinaryUploadPreset);
+    const s3Response = await fetch(metadata.uploadUrl, {
+      method: 'POST',
+      body: s3FormData
+    });
 
-      const cloudinaryResponse = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudinaryCloudName}/image/upload`,
-        {
-          method: 'POST',
-          body: cloudinaryFormData,
-        }
-      );
-
-      const cloudinaryData = await cloudinaryResponse.json();
-
-      if (!cloudinaryResponse.ok) {
-        throw new Error(cloudinaryData.error?.message || 'Failed to upload to Cloudinary');
-      }
-
-      return NextResponse.json({
-        url: cloudinaryData.secure_url,
-        publicId: cloudinaryData.public_id,
-      });
+    if (!s3Response.ok) {
+      const s3Error = await s3Response.text();
+      console.error('S3 upload failed:', s3Error);
+      throw new Error('Failed to upload to Webflow CDN');
     }
 
-    // No image hosting configured - return error with setup instructions
-    return NextResponse.json(
-      {
-        error: 'Image hosting not configured. Please set up ImgBB or Cloudinary.',
-        instructions: {
-          imgbb: 'Set IMGBB_API_KEY environment variable (get free key at https://api.imgbb.com/)',
-          cloudinary: 'Set CLOUDINARY_CLOUD_NAME and CLOUDINARY_UPLOAD_PRESET environment variables',
-        },
-      },
-      { status: 500 }
-    );
+    console.log('Upload successful!');
+
+    // Return the asset info for use in CMS
+    return NextResponse.json({
+      fileId: metadata.id,
+      url: metadata.hostedUrl || `https://cdn.prod.website-files.com/${SITE_ID}/${metadata.id}_${fileName}`,
+      fileName: fileName
+    });
+
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
