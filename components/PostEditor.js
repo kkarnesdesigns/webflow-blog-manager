@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import RichTextEditor from './RichTextEditor';
+import ImageUpload from './ImageUpload';
 
 export default function PostEditor({ postId = null }) {
   const router = useRouter();
@@ -18,6 +19,9 @@ export default function PostEditor({ postId = null }) {
     featured: false,
     location: '',
     category: '',
+    'main-image-2': '',
+    'thumbnail-image': '',
+    'author-image': '',
   });
 
   const [locations, setLocations] = useState([]);
@@ -72,6 +76,9 @@ export default function PostEditor({ postId = null }) {
         featured: data.fieldData?.featured || false,
         location: data.fieldData?.location || '',
         category: data.fieldData?.category || '',
+        'main-image-2': data.fieldData?.['main-image-2']?.url || '',
+        'thumbnail-image': data.fieldData?.['thumbnail-image']?.url || '',
+        'author-image': data.fieldData?.['author-image']?.url || '',
       });
     } catch (err) {
       setError(err.message);
@@ -112,6 +119,23 @@ export default function PostEditor({ postId = null }) {
       // Remove empty reference fields
       if (!payload.location) delete payload.location;
       if (!payload.category) delete payload.category;
+
+      // Format image fields for Webflow API
+      if (payload['main-image-2']) {
+        payload['main-image-2'] = { url: payload['main-image-2'] };
+      } else {
+        delete payload['main-image-2'];
+      }
+      if (payload['thumbnail-image']) {
+        payload['thumbnail-image'] = { url: payload['thumbnail-image'] };
+      } else {
+        delete payload['thumbnail-image'];
+      }
+      if (payload['author-image']) {
+        payload['author-image'] = { url: payload['author-image'] };
+      } else {
+        delete payload['author-image'];
+      }
 
       const url = isNew ? '/api/posts' : `/api/posts/${postId}`;
       const method = isNew ? 'POST' : 'PATCH';
@@ -326,11 +350,30 @@ export default function PostEditor({ postId = null }) {
         </label>
       </div>
 
-      {/* Note about images */}
-      <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-sm text-blue-700">
-        <strong>Note:</strong> To add or change images (main image, thumbnail,
-        author image), please use the Webflow CMS directly. Image uploads are
-        not yet supported in this tool.
+      {/* Image Uploads */}
+      <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+        <h3 className="text-sm font-medium text-gray-700">Images</h3>
+
+        <ImageUpload
+          label="Main Image"
+          value={formData['main-image-2']}
+          onChange={(url) => handleChange('main-image-2', url)}
+          helpText="The main featured image for the blog post"
+        />
+
+        <ImageUpload
+          label="Thumbnail Image"
+          value={formData['thumbnail-image']}
+          onChange={(url) => handleChange('thumbnail-image', url)}
+          helpText="Smaller version shown on the blog grid"
+        />
+
+        <ImageUpload
+          label="Author Image"
+          value={formData['author-image']}
+          onChange={(url) => handleChange('author-image', url)}
+          helpText="Photo of the post author"
+        />
       </div>
 
       {/* Action Buttons */}
