@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import PostEditor from '@/components/PostEditor';
 
-export default function EditPostPage({ params }) {
+export default function EditPostPage() {
   const router = useRouter();
-  const { id } = use(params);
+  const params = useParams();
+  const id = params.id;
   const [authenticated, setAuthenticated] = useState(null);
 
   useEffect(() => {
