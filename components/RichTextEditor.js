@@ -29,9 +29,11 @@ export default function RichTextEditor({ value, onChange }) {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
         input.setAttribute('accept', 'image/jpeg,image/png,image/gif,image/webp');
-        input.click();
+        input.style.display = 'none';
+        document.body.appendChild(input);
 
-        input.onchange = async () => {
+        input.addEventListener('change', async () => {
+          console.log('Change event fired');
           const file = input.files?.[0];
           console.log('File selected:', file?.name, file?.size);
           if (!file) return;
@@ -79,8 +81,13 @@ export default function RichTextEditor({ value, onChange }) {
             console.error('Upload error:', err);
             quill.deleteText(range.index, '[Uploading...]'.length);
             alert('Failed to upload image: ' + err.message);
+          } finally {
+            // Clean up
+            document.body.removeChild(input);
           }
-        };
+        });
+
+        input.click();
       });
     }
   }, [isReady]);
