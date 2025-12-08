@@ -133,14 +133,23 @@ export default function PostEditor({ postId = null }) {
     }));
   };
 
-  // Strip base64 images and problematic content from rich text
+  // Check for and remove base64/blob images from rich text (pasted images that weren't uploaded)
   const sanitizeRichText = (html) => {
-    if (!html) return html;
+    if (!html) return { html, hadInvalidImages: false };
+
+    const hasBase64 = /src=["']data:image\//i.test(html);
+    const hasBlob = /src=["']blob:/i.test(html);
+
+    if (!hasBase64 && !hasBlob) {
+      return { html, hadInvalidImages: false };
+    }
+
     // Remove base64 images (data:image/...)
     let sanitized = html.replace(/<img[^>]+src=["']data:image\/[^"']+["'][^>]*>/gi, '');
     // Remove images with blob URLs
     sanitized = sanitized.replace(/<img[^>]+src=["']blob:[^"']+["'][^>]*>/gi, '');
-    return sanitized;
+
+    return { html: sanitized, hadInvalidImages: true };
   };
 
   const handleSave = async (asDraft = true) => {
@@ -150,9 +159,14 @@ export default function PostEditor({ postId = null }) {
     try {
       const payload = { ...formData };
 
-      // Sanitize rich text to remove problematic images
+      // Sanitize rich text to remove pasted images that weren't uploaded
       if (payload['rich-text']) {
-        payload['rich-text'] = sanitizeRichText(payload['rich-text']);
+        const { html, hadInvalidImages } = sanitizeRichText(payload['rich-text']);
+        payload['rich-text'] = html;
+
+        if (hadInvalidImages) {
+          alert('Some pasted images were removed. Please use the image button in the toolbar to upload images.');
+        }
       }
 
       // Remove empty reference fields
