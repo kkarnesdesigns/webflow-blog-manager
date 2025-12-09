@@ -15,7 +15,6 @@ export default function PostEditor({ postId = null }) {
     'post-summary': '',
     'rich-text': '',
     'alt-text': '',
-    'author-name': '',
     featured: false,
     location: '',
     category: '',
@@ -25,7 +24,6 @@ export default function PostEditor({ postId = null }) {
   const [images, setImages] = useState({
     'main-image-2': { fileId: '', url: '' },
     'thumbnail-image': { fileId: '', url: '' },
-    'author-image': { fileId: '', url: '' },
   });
 
   const [locations, setLocations] = useState([]);
@@ -76,7 +74,6 @@ export default function PostEditor({ postId = null }) {
         'post-summary': data.fieldData?.['post-summary'] || '',
         'rich-text': data.fieldData?.['rich-text'] || '',
         'alt-text': data.fieldData?.['alt-text'] || '',
-        'author-name': data.fieldData?.['author-name'] || '',
         featured: data.fieldData?.featured || false,
         location: data.fieldData?.location || '',
         category: data.fieldData?.category || '',
@@ -91,10 +88,6 @@ export default function PostEditor({ postId = null }) {
         'thumbnail-image': {
           fileId: data.fieldData?.['thumbnail-image']?.fileId || '',
           url: data.fieldData?.['thumbnail-image']?.url || '',
-        },
-        'author-image': {
-          fileId: data.fieldData?.['author-image']?.fileId || '',
-          url: data.fieldData?.['author-image']?.url || '',
         },
       });
     } catch (err) {
@@ -184,12 +177,6 @@ export default function PostEditor({ postId = null }) {
         payload['thumbnail-image'] = {
           fileId: images['thumbnail-image'].fileId,
           url: images['thumbnail-image'].url,
-        };
-      }
-      if (images['author-image'].fileId) {
-        payload['author-image'] = {
-          fileId: images['author-image'].fileId,
-          url: images['author-image'].url,
         };
       }
 
@@ -324,34 +311,21 @@ export default function PostEditor({ postId = null }) {
           value={formData['rich-text']}
           onChange={(value) => handleChange('rich-text', value)}
         />
+        <p className="text-xs text-rr-gray mt-2">Please only use Heading 2 and Heading 3 for titles.</p>
       </div>
 
-      {/* Author and Alt Text */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-rr-navy mb-2">
-            Author Name
-          </label>
-          <input
-            type="text"
-            value={formData['author-name']}
-            onChange={(e) => handleChange('author-name', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
-            placeholder="Author name"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-rr-navy mb-2">
-            Image Alt Text
-          </label>
-          <input
-            type="text"
-            value={formData['alt-text']}
-            onChange={(e) => handleChange('alt-text', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
-            placeholder="Description for main image"
-          />
-        </div>
+      {/* Alt Text */}
+      <div>
+        <label className="block text-sm font-semibold text-rr-navy mb-2">
+          Image Alt Text
+        </label>
+        <input
+          type="text"
+          value={formData['alt-text']}
+          onChange={(e) => handleChange('alt-text', e.target.value)}
+          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-rr-blue focus:border-transparent transition-all duration-200"
+          placeholder="Description for main image"
+        />
       </div>
 
       {/* Location and Category */}
@@ -372,6 +346,7 @@ export default function PostEditor({ postId = null }) {
               </option>
             ))}
           </select>
+          <p className="text-xs text-rr-gray mt-2">Please ALWAYS select "Tampa" as the location.</p>
         </div>
         <div>
           <label className="block text-sm font-semibold text-rr-navy mb-2">
@@ -422,13 +397,6 @@ export default function PostEditor({ postId = null }) {
           value={images['thumbnail-image']}
           onChange={(data) => handleImageChange('thumbnail-image', data)}
           helpText="Smaller version shown on the blog grid"
-        />
-
-        <ImageUpload
-          label="Author Image"
-          value={images['author-image']}
-          onChange={(data) => handleImageChange('author-image', data)}
-          helpText="Photo of the post author"
         />
       </div>
 
